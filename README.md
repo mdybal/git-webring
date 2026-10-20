@@ -20,11 +20,13 @@ A tiny, dependency-free [**webring**](https://en.wikipedia.org/wiki/Webring) for
 Two lines of HTML:
 
 ```html
-<script src="https://YOUR-HOST/git-webring/webring.js" defer></script>
-<git-webring site="https://yoursite.example/"></git-webring>
+<script src="https://mdybal.github.io/git-webring/webring.js" defer></script>
+<git-webring site="https://yoursite.example/" logo="/webring-logo.svg"></git-webring>
 ```
 
 The widget renders prev / random / next / list links to the other ring members, plus your position in the ring ("Member 3 of 17"). It works offline via a 5-minute `localStorage` cache.
+
+The `logo` attribute is optional. If present, **the logo must be hosted on the same page as the widget itself** &mdash; a relative URL like `/webring-logo.svg`, resolved against your site. Cross-origin URLs and inline `data:` URIs are silently rejected; the gadget falls back to a text label.
 
 ### Why `<git-webring>` and not just `<webring>`?
 
@@ -34,9 +36,45 @@ Custom element names are required to contain a hyphen (per the [custom elements 
 
 | Attribute | Required | Default | Purpose |
 |-----------|----------|---------|---------|
-| `site` | yes | &mdash; | Your site's homepage URL. Drives ring order lookup. |
-| `data-src` | no | `./members.json` next to `webring.js` | URL of the registry JSON. |
-| `theme` | no | `light` | `light` or `dark`. Auto-detects if omitted (inherits host theme). |
+| `site`      | yes   | &mdash;        | Your site's homepage URL. Drives ring order lookup. |
+| `data-src`  | no    | `./members.json` next to `webring.js` | URL of the registry JSON. |
+| `theme`     | no    | `auto`         | `light` / `dark` / `auto`. `auto` inherits the visitor's OS color scheme. |
+| `logo`      | no    | _text label_   | Relative URL to a brand image, **same origin** as the page. |
+| `logo-width`  | no | `auto`       | Inline width on the `<img>` tag (`"32px"`). |
+| `logo-height` | no | `18px`       | Inline height on the `<img>` tag (`"32px"`). |
+
+### Customizing the look
+
+The widget is intentionally shaped to **blend in with the host page** (text color, font, and panel border all inherit from `currentColor` by default) while keeping its own identity (a single brand accent for the links, and a brand-mark slot for a logo).
+
+You can tune it from your stylesheet two ways.
+
+**CSS custom properties** &mdash; set any of these on `:root`, on the host page, or directly on `<git-webring>`:
+
+| Token | Default | What it controls |
+|-------|---------|------------------|
+| `--wbr-color`     | `currentColor`     | Text color. |
+| `--wbr-bg`        | `transparent`      | Panel background. |
+| `--wbr-border`    | `currentColor`     | Border color (rendered via `border: 1px solid &hellip;`). |
+| `--wbr-accent`    | `#0366d6` / `#58a6ff` (dark) | Only brand-specific color: link color. |
+| `--wbr-radius`    | `6px`              | Corner radius. |
+| `--wbr-pad-y` / `--wbr-pad-x` | `10px` / `14px` | Inner padding. |
+| `--wbr-gap`       | `8px`              | Spacing between nav links. |
+| `--wbr-font`      | `inherit`          | Font family (match the page). |
+| `--wbr-font-size` | `14px`             | Text size. |
+| `--wbr-logo-size` | `18px`             | Brand-mark height. |
+
+**CSS Shadow Parts** &mdash; for surgical edits:
+
+```css
+git-webring::part(box)    { border-style: dashed; border-radius: 0; }
+git-webring::part(logo)   { font-family: "EB Garamond", serif; }
+git-webring::part(link)   { font-weight: 600; }
+git-webring::part(status) { text-transform: uppercase; letter-spacing: .04em; font-size: 11px; }
+git-webring::part(list)   { display: none; }   /* hide the member list entirely */
+```
+
+Available parts: `box`, `logo`, `row`, `link`, `sep`, `status`, `list`, `summary`.
 
 ### Self-hosting
 

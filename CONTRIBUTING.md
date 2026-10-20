@@ -11,7 +11,8 @@ Thanks for considering joining the ring! &nbsp;&nbsp;🌐
       "id": "your-handle",
       "name": "Your Display Name",
       "url": "https://yoursite.example/",
-      "added": "YYYY-MM-DD"
+      "added": "YYYY-MM-DD",
+      "icon": "/avatar.png"                 // optional
     }
     ```
 
@@ -19,6 +20,7 @@ Thanks for considering joining the ring! &nbsp;&nbsp;🌐
     - `name` &mdash; the human-readable label that will appear on other sites' nav bars.
     - `url` &mdash; the homepage URL of your site. **Must match** the `site=""` attribute on your widget, exactly (the widget strips trailing slashes, but please be tidy).
     - `added` &mdash; the ISO date you joined. Anything `<= today` is fine.
+    - `icon` &mdash; _optional_. URL of a tiny thumbnail shown next to your name on other sites’ nav bars. Same origin rule as the widget logo.
 
 2. **Open a pull request.** Title it `Add <your-handle> to the ring`. In the body, drop a one-liner about your site so reviewers know what they're approving.
 
@@ -30,7 +32,7 @@ Simply remove your object from `members.json` in a PR titled `Remove <your-handl
 
 ## Style guide for `members.json`
 
-- Stable field order: `id`, `name`, `url`, `added`. (Future fields may be added; old ones won't be removed without a major bump.)
+- Stable field order: `id`, `name`, `url`, `added`, then optional `icon`. (Future fields may be added; old ones won't be removed without a major bump.)
 - 2-space indent, LF line endings (the repo's `.gitattributes` enforces this).
 - No trailing commas. Run `python -m json.tool members.json > /dev/null` to lint.
 - One entry per site. If you maintain multiple sites, add multiple entries.

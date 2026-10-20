@@ -23,11 +23,14 @@ class FakeHTMLElement {
   connectedCallback() {}
 }
 
+// Fixture note: document.location is set so the new same-origin enforcement
+// on the `logo` attribute has a deterministic answer in the smoke tests.
 const document = {
   _elements: new Map(),
   getElementById(id) { return this._elements.get(id) || null; },
   getElementsByTagName() { return []; },
-  createElement(tag) { return tag === "script" ? { src: "", textContent: "", type: "" } : null; }
+  createElement(tag) { return tag === "script" ? { src: "", textContent: "", type: "" } : null; },
+  location: { href: "https://test.example/index.html", origin: "https://test.example" }
 };
 
 const customElements = {
@@ -132,6 +135,80 @@ async function withMembers(members, site) {
   await e7._load();
   assert("bad inline JSON surfaces error styling", /wbr-err/.test(e7.shadowRoot.innerHTML), e7.shadowRoot.innerHTML);
 
-  console.log("\nSMOKE TEST: " + pass + " passed, " + fail + " failed");
+  // 7) logo slot: same-origin relative URL renders an <img>
+  var e8 = await withMembers(ring, "https://bob.example/");
+  e8.shadowRoot = { innerHTML: "" };
+  e8.setAttribute("logo", "/webring-logo.svg");
+  e8._render();
+  var h8 = e8.shadowRoot.innerHTML;
+  assert("logo renders <img class=\"wbr-logo\">", /<img class=\"wbr-logo\"[^>]*src=\"[^"]*webring-logo\.svg\"/.test(h8), h8);
+  assert("logo <img> carries part=\"logo\"", /class=\"wbr-logo\"[^>]*part=\"logo\"/.test(h8), h8);
+  assert("logo <img> has alt=\"git-webring\"", /alt=\"git-webring\"/.test(h8), h8);
+
+  // 8) logo: cross-origin absolute URL is rejected, falls back to text label
+  var e9 = await withMembers(ring, "https://bob.example/");
+  e9.shadowRoot = { innerHTML: "" };
+  e9.setAttribute("logo", "https://other.example/x.svg");
+  e9._render();
+  var h9 = e9.shadowRoot.innerHTML;
+  assert("cross-origin logo is rejected", !/<img class=\"wbr-logo\"/.test(h9), h9);
+  assert("logo-fallback renders text label inside <span part=\"logo\">", /<span class=\"wbr-label\" part=\"logo\">git-webring<\/span>/.test(h9), h9);
+
+  // 9) logo: data: URI is rejected (must be hosted on the page)
+  var e10 = await withMembers(ring, "https://bob.example/");
+  e10.shadowRoot = { innerHTML: "" };
+  e10.setAttribute("logo", "data:image/svg+xml;base64,AAAA");
+  e10._render();
+  var h10 = e10.shadowRoot.innerHTML;
+  assert("data: URI logo is rejected", !/<img class=\"wbr-logo\"/.test(h10), h10);
+
+  // 10) logo-height attr applies inline style on the <img>
+  var e11 = await withMembers(ring, "https://bob.example/");
+  e11.shadowRoot = { innerHTML: "" };
+  e11.setAttribute("logo", "/webring-logo.svg");
+  e11.setAttribute("logo-height", "32px");
+  e11._render();
+  var h11 = e11.shadowRoot.innerHTML;
+  assert("logo-height inline-styles the <img>", /<img class=\"wbr-logo\"[^>]*style=\"[^"]*height:32px/.test(h11), h11);
+
+  // 11) Default theme = auto; stylesheet exposes auto/media-query rules.
+  var e12 = await withMembers([{ id:"a", name:"Alice", url:"https://alice.example/" }], "https://alice.example/");
+  e12.shadowRoot = { innerHTML: "" };
+  e12._render();
+  var h12 = e12.shadowRoot.innerHTML;
+  assert("stylesheet contains prefers-color-scheme media query + :host(:not([theme=light]))",
+    /@media \(prefers-color-scheme: dark\)/.test(h12) && /:host\(:not\(\[theme=light\]\)\)/.test(h12), h12);
+  assert("stylesheet exposes --wbr-color:currentColor fallback", /--wbr-color:currentColor/.test(h12), h12);
+  assert("stylesheet defines :host([theme=dark])", /:host\(\[theme=dark\]\)/.test(h12), h12);
+
+  // 12) CSS shadow parts are exposed on key elements.
+  var e13 = await withMembers(ring, "https://bob.example/");
+  e13.shadowRoot = { innerHTML: "" };
+  e13._render();
+  var h13 = e13.shadowRoot.innerHTML;
+  assert("part=\"box\" on the framed container", /class=\"wbr-box\" part=\"box\"/.test(h13), h13);
+  assert("part=\"row\" on the inner row",        /class=\"wbr-row\" part=\"row\"/.test(h13), h13);
+  assert("part=\"status\" on the status line",   /class=\"wbr-status\" part=\"status\"/.test(h13), h13);
+  assert("part=\"sep\" on at least one separator", /<span class=\"wbr-sep\" part=\"sep\"/.test(h13), h13);
+  assert("part=\"link\" on at least the 4 nav <a>s (prev/random/next/list) + list items", (h13.match(/<a [^>]*part=\"link\"/g) || []).length >= 4, h13);
+  assert("part=\"list\" + part=\"summary\" on the member details",
+    /<details [^>]*part=\"list\"/.test(h13) && /<summary part=\"summary\"/.test(h13), h13);
+
+  // 13) Per-member icon: when an entry has \"icon\", prev/next/random links render a thumbnail.
+  var ringWithIcons = [
+    { id: "a", name: "Alice", url: "https://alice.example/", icon: "/avatars/alice.png" },
+    { id: "b", name: "Bob",   url: "https://bob.example/",   icon: "/avatars/bob.png"   },
+    { id: "c", name: "Carol", url: "https://carol.example/", icon: "/avatars/carol.png" }
+  ];
+  var e14 = await withMembers(ringWithIcons, "https://bob.example/");
+  e14.shadowRoot = { innerHTML: "" };
+  e14._render();
+  var h14 = e14.shadowRoot.innerHTML;
+  assert("member icon renders <img class=\"wbr-jump-img\"> in nav links",
+    (h14.match(/<img class=\"wbr-jump-img\"/g) || []).length >= 3, h14);
+  assert("member icon appears in the list <li>",
+    /<li><img class=\"wbr-jump-img\"[^>]*src=\"[^"]*alice\.png\"[^>]*>[^<]*<a [^>]*>Alice<\/a><\/li>/.test(h14), h14);
+
+    console.log("\nSMOKE TEST: " + pass + " passed, " + fail + " failed");
   process.exit(fail === 0 ? 0 : 1);
 })().catch(function (err) { console.error("FATAL", err); process.exit(2); });

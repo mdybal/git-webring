@@ -19,13 +19,14 @@
       <h2>Live demo</h2>
       <p>The widget below is the <code>&lt;git-webring&gt;</code> custom element. This page embeds a 3-member demo ring inline (so the demo works even when opened from a <code>file://</code> URL); on a real member's site, you'd drop the inline override and let the widget <code>fetch()</code> <a href="members.json"><code>members.json</code></a> from this repo.</p>
 
-      <script type="application/json" id="webring-members">[{"id":"alice","name":"Alice Example","url":"https://alice.example/","added":"2026-01-01"},{"id":"bob","name":"Bob Example","url":"https://bob.example/","added":"2026-01-01"},{"id":"carol","name":"Carol Example","url":"https://carol.example/","added":"2026-01-01"}]</script>
-      <git-webring site="https://bob.example/" theme="light"></git-webring>
+      <script type="application/json" id="webring-members">[{"id":"alice","name":"Alice Example","url":"https://alice.example/","added":"2026-01-01","icon":"./demo-logo.svg"},{"id":"bob","name":"Bob Example","url":"https://bob.example/","added":"2026-01-01","icon":"./demo-logo.svg"},{"id":"carol","name":"Carol Example","url":"https://carol.example/","added":"2026-01-01","icon":"./demo-logo.svg"}]</script>
+      <git-webring site="https://bob.example/" logo="./demo-logo.svg" theme="auto"></git-webring>
 
       <details>
         <summary>Show the HTML</summary>
-<pre><code>&lt;script src="https://YOUR-HOST/git-webring/webring.js" defer&gt;&lt;/script&gt;
-&lt;git-webring site="https://yoursite.example/"&gt;&lt;/git-webring&gt;</code></pre>
+<pre><code>&lt;script src="https://mdybal.github.io/git-webring/webring.js" defer&gt;&lt;/script&gt;
+&lt;git-webring site="https://yoursite.example/" logo="/webring-logo.svg"&gt;&lt;/git-webring&gt;</code></pre>
+        <p>The <code>logo</code> is optional. When present, it must be hosted on the same page (relative URL, no <code>data:</code> URIs, no cross-origin) so the gadget never reaches out to a third party for branding.</p>
       </details>
     </section>
 
