@@ -53,8 +53,8 @@ sandbox.window = sandbox;
 
 vm.runInNewContext(SRC, sandbox, { filename: "webring.js" });
 
-const WbrCtor = registry.get("webring");
-if (!WbrCtor) { console.error("FAIL: <webring> not registered"); process.exit(1); }
+const WbrCtor = registry.get("git-webring");
+if (!WbrCtor) { console.error("FAIL: <git-webring> not registered"); process.exit(1); }
 
 async function withMembers(members, site) {
   document._elements.set("webring-members", { textContent: JSON.stringify(members) });

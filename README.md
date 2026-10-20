@@ -9,7 +9,7 @@ A tiny, dependency-free [**webring**](https://en.wikipedia.org/wiki/Webring) for
 | File | What it does |
 |------|--------------|
 | `index.html` | The project's homepage. Shows the widget working live. |
-| `webring.js` | Defines the `<webring>` [custom element](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements). ~10&nbsp;KB, no dependencies. |
+| `webring.js` | Defines the `<git-webring>` [custom element](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements). ~10&nbsp;KB, no dependencies. |
 | `members.json` | The shared registry of ring members. JSON, line-by-line, easy to PR. |
 | `style.css` | Styling for the project homepage only. The widget is self-styled. |
 | `CONTRIBUTING.md` | How to add (or remove) yourself from the ring. |
@@ -21,10 +21,14 @@ Two lines of HTML:
 
 ```html
 <script src="https://YOUR-HOST/git-webring/webring.js" defer></script>
-<webring site="https://yoursite.example/"></webring>
+<git-webring site="https://yoursite.example/"></git-webring>
 ```
 
 The widget renders prev / random / next / list links to the other ring members, plus your position in the ring ("Member 3 of 17"). It works offline via a 5-minute `localStorage` cache.
+
+### Why `<git-webring>` and not just `<webring>`?
+
+Custom element names are required to contain a hyphen (per the [custom elements spec](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name)). The script file stays short (`webring.js`); only the tag has the dash.
 
 ### Attributes
 
@@ -41,7 +45,7 @@ If you'd rather skip the network fetch on every page view, drop the registry inl
 ```html
 <script type="application/json" id="webring-members">[ ... ]</script>
 <script src="/git-webring/webring.js" defer></script>
-<webring site="https://yoursite.example/"></webring>
+<git-webring site="https://yoursite.example/"></git-webring>
 ```
 
 Inline wins over the network, so your readers make zero cross-origin requests for the ring.

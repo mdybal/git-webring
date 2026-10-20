@@ -1,9 +1,13 @@
 /*!
- * <webring> — a tiny, dependency-free Web Component for joining a webring.
+ * <git-webring> — a tiny, dependency-free Web Component for joining a webring.
+ *
+ * Why "git-webring" and not just "webring"? Custom element names are required
+ * to contain a hyphen. The tag is one word with a dash, the script file can
+ * stay short ("webring.js").
  *
  * Usage on your site:
  *   <script src="https://YOUR-HOST/git-webring/webring.js" defer></script>
- *   <webring site="https://yoursite.example/"></webring>
+ *   <git-webring site="https://yoursite.example/"></git-webring>
  *
  * Attributes:
  *   - site      (required) URL of the current site's homepage. Used to look up
@@ -80,7 +84,7 @@
       var scripts = document.getElementsByTagName("script");
       for (var i = 0; i < scripts.length; i++) {
         var src = scripts[i].src || "";
-        if (src && /webring(?:\.min)?\.js(?:$|\?)/.test(src)) {
+        if (src && /(?:git-)?webring(?:\.min)?\.js(?:$|\?)/.test(src)) {
           return new URL("members.json", src).href;
         }
       }
@@ -248,7 +252,7 @@
       "<style>" + this._styles() + "</style>" + body + listHtml;
   };
 
-  if (!customElements.get("webring")) {
-    customElements.define("webring", WebringElement);
+  if (!customElements.get("git-webring")) {
+    customElements.define("git-webring", WebringElement);
   }
 })();
