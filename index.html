@@ -1,69 +1,124 @@
 <!doctype html>
-<html lang="en">
+<html lang="pl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>git-webring — a tiny ring for personal sites</title>
-  <meta name="description" content="A minimalist, dependency-free webring for personal sites, run as a GitHub Pages-friendly repository." />
+  <title>git-webring — mały krąg dla osobistych stron</title>
+  <meta name="description" content="Minimalistyczny, wolny od zależności webring dla osobistych stron — hostowany jak zwykłe repozytorium GitHuba." />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E%F0%9F%9C%8C%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
   <header>
-    <h1>git-webring</h1>
-    <p class="tagline">A small, dependency-free webring for personal sites &mdash; run from a git repo.</p>
+    <h1>RPG Web Ring</h1>
+    <p class="tagline">Mały, niezależny webring dla polskich stron RPG</p><p  class="tagline"><i>Bring back the 90s! Bring back Web 1.0!</i></p>
   </header>
 
   <main>
     <section class="card">
-      <h2>Live demo</h2>
-      <p>The widget below is the <code>&lt;git-webring&gt;</code> custom element. This page embeds a 3-member demo ring inline (so the demo works even when opened from a <code>file://</code> URL); on a real member's site, you'd drop the inline override and let the widget <code>fetch()</code> <a href="members.json"><code>members.json</code></a> from this repo.</p>
+      <h2>Dlaczego to powstaje?</h2>
+      <p>Social media dawno przejęły kontrolę nad tym, co widzimy w sieci. Algorytmy dobierają treści pod kątem kliknięć i reklam, a nie ich wartości dla czytelnika. W efekcie nawet jeśli tworzysz świetną stronę, nikt na nią nie trafi, dopóki algorytm nie zdecyduje inaczej.</p>
+      <p><strong>Celem tego projektu jest wyrwanie się z tej pętli.</strong> Wracamy do pomysłu sprzed trzydziestu lat: niezależnych stron, które ręcznie linkują do siebie nawzajem, tworząc krąg. Czytelnik sam decyduje, dokąd pójdzie dalej &mdash; bez feedu, bez cenzury, bez „polecanych dla ciebie”. Zamiast tego mamy po prostu sąsiada w sieci.</p>
+      <p>Cały projekt jest świadomie śmiesznie mały: jeden plik <code>JSON</code>, jeden skrypt, jeden własny element HTML. Dołączenie zajmuje mniej więcej piętnaście minut &mdash; a potem Twoja strona znów jest częścią czegoś większego niż ona sama.</p>
+    </section>
+
+    <section class="card">
+      <h2>WebRing banner</h2>
+      <p>Poniższy widget to niestandardowy element <code>&lt;git-webring&gt;</code>. Kiedy ktoś otworzy Twoją stronę widget sam pobiera z repozytorium listę innych członków kręgu z pliku <a href="members.json"><code>members.json</code></a>.</p>
 
       <script type="application/json" id="webring-members">[{"id":"alice","name":"Alice Example","url":"https://alice.example/","added":"2026-01-01","icon":"./demo-logo.svg"},{"id":"bob","name":"Bob Example","url":"https://bob.example/","added":"2026-01-01","icon":"./demo-logo.svg"},{"id":"carol","name":"Carol Example","url":"https://carol.example/","added":"2026-01-01","icon":"./demo-logo.svg"}]</script>
       <git-webring site="https://bob.example/" logo="./demo-logo.svg" theme="auto"></git-webring>
-
+      <p>Kod HTML widgetu, który trzeba dodać na stronie znajdziesz poniżej.</p>
       <details>
-        <summary>Show the HTML</summary>
+        
+        <summary>Pokaż kod HTML</summary>
 <pre><code>&lt;script src="https://mdybal.github.io/git-webring/webring.js" defer&gt;&lt;/script&gt;
-&lt;git-webring site="https://yoursite.example/" logo="/webring-logo.svg"&gt;&lt;/git-webring&gt;</code></pre>
-        <p>The <code>logo</code> is optional. When present, it must be hosted on the same page (relative URL, no <code>data:</code> URIs, no cross-origin) so the gadget never reaches out to a third party for branding.</p>
+&lt;git-webring site="https://twojastrona.example/" logo="/webring-logo.svg"&gt;&lt;/git-webring&gt;</code></pre>
+        <p>Atrybut <code>logo</code> jest opcjonalny. Jeśli go użyjesz, obrazek musi być hostowany w obrębie Twojej strony (adres względny, bez <code>data:</code>, bez innej domeny) &mdash; dzięki temu widget nie odpytuje zewnętrznych serwerów w imieniu Twojego czytelnika.</p>
       </details>
     </section>
 
     <section class="card">
-      <h2>How to join</h2>
+      <h2>Jak dołączyć do kręgu</h2>
       <ol>
-        <li>Add the two-line widget to your site (see above).</li>
-        <li>Open a PR adding your entry to <a href="members.json"><code>members.json</code></a>:</li>
+        <li>
+          <strong>Umieść widget na swojej stronie.</strong> Wklej te dwie linijki w kodzie HTML strony, w miejscu, w którym widget ma się pojawić:
+<pre><code>&lt;script src="https://mdybal.github.io/git-webring/webring.js" defer&gt;&lt;/script&gt;
+&lt;git-webring site="https://twojastrona.example/"&gt;&lt;/git-webring&gt;</code></pre>
+          <p>Zamień <code>https://twojastrona.example/</code> na adres swojej strony. Adres musi być <em>dokładnie taki sam</em> jak ten, który potem wpiszesz w <code>members.json</code>.</p>
+        </li>
+        <li>
+          <strong>Dodaj się do rejestru <code>members.json</code>.</strong> Na końcu listy dopisz swój obiekt &mdash; zachowaj ten sam kształt, co pozostałe wpisy:
+<pre><code>{
+  "id": "twoj-handle",
+  "name": "Twoja Nazwa Wyświetlana",
+  "url": "https://twojastrona.example/",
+  "added": "RRRR-MM-DD"
+}</code></pre>
+          <p>Nowe wpisy trafiają zawsze na koniec &mdash; w ten sposób naturalnie stajesz obok osoby, która dołączyła tuż przed Tobą. Jeśli chcesz odejść z kręgu, w podobnym PR usuń swój obiekt z listy.</p>
+        </li>
+        <li>
+          <strong>Wyślij Pull Request (PR) na GitHubie.</strong> Nie musisz być programistą &mdash; wystarczy darmowe konto na GitHubie. Krok po kroku:
+          <ol>
+            <li>Otwórz plik <a href="https://github.com/mdybal/git-webring/blob/main/members.json"><code>members.json</code></a> w naszym repozytorium.</li>
+            <li>Kliknij ikonkę ołówka ✏️ w prawym górnym rogu (<em>„Edit this file”</em>).</li>
+            <li>Na końcu listy dopisz swój obiekt (tak jak w przykładzie wyżej).</li>
+            <li>Na dole strony kliknij przycisk <em>„Propose changes”</em>.</li>
+            <li>Na następnej stronie kliknij <em>„Create pull request”</em>.</li>
+            <li>W tytule PR-a wpisz <code>Add &lt;twoj-handle&gt; to the ring</code>, a w opisie &mdash; krótko (jedno zdanie wystarczy), czym jest Twoja strona.</li>
+          </ol>
+          <p>Ktoś z nas zerknie, czy wszystko się zgadza (adres URL jest taki sam jak w <code>site=""</code> na widżecie, a JSON nadal się parsuje) i najpewniej tego samego tygodnia scalamy Twoje zgłoszenie.</p>
+        </li>
+        <li>
+          <strong>Nie masz konta na GitHubie albo GitHub wydaje się za trudny?</strong> Bez stresu &mdash; napisz do nas przez <a href="https://www.facebook.com/TwojeStareRPG/" target="_blank" rel="noopener">profil Twoje Stare RPG na Facebooku</a>. Podaj adres swojej strony, nazwę wyświetlaną i krótki opis, a my sami dopiszemy Twój wpis do kręgu.
+        </li>
       </ol>
-<pre><code>[
-  {
-    "id": "your-handle",
-    "name": "Your Display Name",
-    "url": "https://yoursite.example/",
-    "added": "YYYY-MM-DD"
-  }
-]</code></pre>
-      <p>Net-new entries go at the bottom. To leave the ring, remove your object in a PR.</p>
     </section>
 
     <section class="card">
-      <h2>Self-hosting</h2>
-      <p>If you'd rather not ping the central registry on every page view, drop the JSON inline:</p>
-<pre><code>&lt;script type="application/json" id="webring-members"&gt;[ ... paste members.json here ... ]&lt;/script&gt;
-&lt;script src="/git-webring/webring.js" defer&gt;&lt;/script&gt;
-&lt;git-webring site="https://yoursite.example/"&gt;&lt;/git-webring&gt;</code></pre>
-      <p>The inline script wins over the network fetch, so you're back to zero external requests.</p>
-    </section>
+      <h2>Zaawansowana stylizacja (CSS)</h2>
+      <p>Widget udostępnia dwa mechanizmy, które pozwalają wpasować jego wygląd w charakter Twojej strony: <strong>zmienne CSS</strong> (proste zmiany kolorów i rozmiarów) oraz <strong>CSS Shadow Parts</strong> (bardziej „chirurgiczne” zmiany poszczególnych elementów).</p>
 
-    <section class="card">
-      <h2>Why?</h2>
-      <p>Webrings are a thirty-year-old idea worth rescuing: independent sites that link to one another in a ring, surfacing each other to readers. This project reduces the original to its <em>minimum viable form</em> &mdash; one JSON file, one script, one custom element &mdash; so the cost of joining is roughly fifteen minutes.</p>
+      <h3>Zmienne CSS</h3>
+      <p>Wystarczy, że w swoim arkuszu stylów ustawisz jedną lub kilka własności <code>--wbr-*</code> na <code>:root</code>, na <code>body</code> albo bezpośrednio na samym elemencie <code>&lt;git-webring&gt;</code>. Oto przykład:</p>
+<pre><code>git-webring {
+  --wbr-color: #2b1b10;
+  --wbr-bg: #ecdcb8;
+  --wbr-accent: #a8420f;
+  --wbr-border: #b07a1f;
+  --wbr-radius: 4px;
+  --wbr-font: "EB Garamond", Georgia, serif;
+  --wbr-font-size: 14px;
+}</code></pre>
+      <p>Najczęściej używane zmienne:</p>
+      <ul>
+        <li><code>--wbr-color</code> &mdash; kolor tekstu (domyślnie <code>#3a2412</code>).</li>
+        <li><code>--wbr-bg</code> &mdash; tło ramki widgetu (domyślnie <code>#ecdcb8</code>).</li>
+        <li><code>--wbr-accent</code> &mdash; kolor linków (domyślnie <code>#a8420f</code>).</li>
+        <li><code>--wbr-accent-2</code> &mdash; drugi akcent (podświetlenie, linki odwiedzone).</li>
+        <li><code>--wbr-border</code> &mdash; kolor obramowania (domyślnie <code>#b07a1f</code>, mosiądz).</li>
+        <li><code>--wbr-shadow</code> &mdash; kolor twardego „rzucanego” cienia.</li>
+        <li><code>--wbr-radius</code> &mdash; zaokrąglenie rogów (domyślnie <code>3px</code>).</li>
+        <li><code>--wbr-pad-y</code>, <code>--wbr-pad-x</code> &mdash; wewnętrzne odstępy.</li>
+        <li><code>--wbr-gap</code> &mdash; odstęp między linkami nawigacji.</li>
+        <li><code>--wbr-font</code> &mdash; krój pisma (dobierz taki sam jak na reszcie strony).</li>
+        <li><code>--wbr-font-size</code> &mdash; rozmiar tekstu (domyślnie <code>14px</code>).</li>
+        <li><code>--wbr-logo-size</code> &mdash; wysokość logo marki (domyślnie <code>18px</code>).</li>
+      </ul>
+
+      <h3>CSS Shadow Parts</h3>
+      <p>Widget wystawia tak zwane <em>shadow parts</em> &mdash; możesz ostylować każdy element po nazwie, np.:</p>
+<pre><code>git-webring::part(box)    { border-style: dashed; border-radius: 0; }
+git-webring::part(link)   { font-weight: 600; }
+git-webring::part(status) { text-transform: uppercase; letter-spacing: .04em; font-size: 11px; }
+git-webring::part(list)   { display: none; }   /* ukryj listę wszystkich członków */</code></pre>
+      <p>Dostępne części: <code>box</code>, <code>logo</code>, <code>bar</code>, <code>title</code>, <code>help</code>, <code>row</code>, <code>link</code>, <code>sep</code>, <code>status</code>, <code>list</code>, <code>summary</code>.</p>
+      <p>Dzięki temu możesz np. ukryć listę wszystkich członków, zmienić znak separatora między linkami albo wymusić konkretną czcionkę tylko dla nawigacji &mdash; bez modyfikowania samego widgetu.</p>
     </section>
   </main>
 
   <footer>
-    <p>Hosted as a regular git repo. Fork, edit <a href="members.json">members.json</a>, open a PR.</p>
+    <p>Projekt hostowany jest jak zwykłe repozytorium git. Zrób fork, edytuj <a href="members.json">members.json</a>, wyślij pull request.</p>
   </footer>
 
   <script src="webring.js" defer></script>
