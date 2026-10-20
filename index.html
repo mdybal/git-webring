@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>git-webring — a tiny ring for personal sites</title>
+  <meta name="description" content="A minimalist, dependency-free webring for personal sites, run as a GitHub Pages-friendly repository." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E%F0%9F%9C%8C%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <header>
+    <h1>git-webring</h1>
+    <p class="tagline">A small, dependency-free webring for personal sites &mdash; run from a git repo.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Live demo</h2>
+      <p>The widget below is the <code>&lt;webring&gt;</code> custom element. It's reading <a href="members.json"><code>members.json</code></a> from this same repo. On a real member's site, you'd point <code>site</code> at their homepage URL.</p>
+
+      <webring site="https://example.com/" theme="light"></webring>
+
+      <details>
+        <summary>Show the HTML</summary>
+<pre><code>&lt;script src="https://YOUR-HOST/git-webring/webring.js" defer&gt;&lt;/script&gt;
+&lt;webring site="https://example.com/"&gt;&lt;/webring&gt;</code></pre>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>How to join</h2>
+      <ol>
+        <li>Add the two-line widget to your site (see above).</li>
+        <li>Open a PR adding your entry to <a href="members.json"><code>members.json</code></a>:</li>
+      </ol>
+<pre><code>[
+  {
+    "id": "your-handle",
+    "name": "Your Display Name",
+    "url": "https://yoursite.example/",
+    "added": "YYYY-MM-DD"
+  }
+]</code></pre>
+      <p>Net-new entries go at the bottom. To leave the ring, remove your object in a PR.</p>
+    </section>
+
+    <section class="card">
+      <h2>Self-hosting</h2>
+      <p>If you'd rather not ping the central registry on every page view, drop the JSON inline:</p>
+<pre><code>&lt;script type="application/json" id="webring-members"&gt;[ ... paste members.json here ... ]&lt;/script&gt;
+&lt;script src="/git-webring/webring.js" defer&gt;&lt;/script&gt;
+&lt;webring site="https://yoursite.example/"&gt;&lt;/webring&gt;</code></pre>
+      <p>The inline script wins over the network fetch, so you're back to zero external requests.</p>
+    </section>
+
+    <section class="card">
+      <h2>Why?</h2>
+      <p>Webrings are a thirty-year-old idea worth rescuing: independent sites that link to one another in a ring, surfacing each other to readers. This project reduces the original to its <em>minimum viable form</em> &mdash; one JSON file, one script, one custom element &mdash; so the cost of joining is roughly fifteen minutes.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Hosted as a regular git repo. Fork, edit <a href="members.json">members.json</a>, open a PR.</p>
+  </footer>
+
+  <script src="webring.js" defer></script>
+</body>
+</html>
