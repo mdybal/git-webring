@@ -78,7 +78,7 @@ async function withMembers(members, site) {
   // 1) single member
   var e1 = await withMembers([{ id: "a", name: "Alice", url: "https://example.com/" }], "https://example.com/");
   var h1 = e1.shadowRoot.innerHTML;
-  assert("single member shows the 'first member' message", /first member/.test(h1), h1);
+  assert("single member shows the 'first member' message", /pierwszym członkiem/.test(h1), h1);
   assert("single member omits prev/next/random", !/rel="prev"/.test(h1) && !/rel="next"/.test(h1) && !/rel="random"/.test(h1), h1);
 
   // 2) ring of 3, current = middle (bob)
@@ -97,12 +97,12 @@ async function withMembers(members, site) {
   // 3a) unknown site, empty registry -> fetch path
   var e3 = await withMembers([], "https://nobody.example/");
   var h3 = e3.shadowRoot.innerHTML;
-  assert("empty registry shows the checking-membership message", /Checking membership/.test(h3), h3);
+  assert("empty registry shows the checking-membership message", /Sprawdzanie członkostwa/.test(h3), h3);
 
   // 3b) unknown site, non-empty registry -> Join CTA
   var e4 = await withMembers([{ id: "a", name: "Alice", url: "https://alice.example/" }], "https://nobody.example/");
   var h4 = e4.shadowRoot.innerHTML;
-  assert("unknown site gets Join CTA", /Join the ring/.test(h4), h4);
+  assert("unknown site gets Join CTA", /Dołącz do kręgu/.test(h4), h4);
 
   // 4) trailing slash normalization
   var e5 = await withMembers([

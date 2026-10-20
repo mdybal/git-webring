@@ -360,7 +360,7 @@
         : "";
     };
     var linkHtml = function (m, dir, label) {
-      var arrowBefore = (dir === "prev" || dir === "random") ? "\u2190 " : "";
+      var arrowBefore = (dir === "prev" ) ? "\u2190 " : "";
       var arrowAfter  = (dir === "next") ? " \u2192" : "";
       var inner = arrowBefore + memberIcon(m) + label + arrowAfter;
       return '<a href="' + esc(m.url) + '" rel="' + esc(dir) + '" part="link">' + inner + '</a>';
@@ -383,7 +383,7 @@
           '<div class="wbr-row" part="row">' +
             linkHtml(prev, "prev", esc(prev.name)) +
             '<span class="wbr-sep" part="sep" aria-hidden="true">\u2726</span>' +
-            linkHtml(random, "random", "random") +
+            linkHtml(random, "random", "Losowa") +
             '<span class="wbr-sep" part="sep" aria-hidden="true">\u2726</span>' +
             linkHtml(next, "next", esc(next.name)) +
           '</div>' +
@@ -393,7 +393,7 @@
       body =
         '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            '<span>You\u2019re the first member! Invite others via PR.</span>' +
+            '<span>Jesteś pierwszym członkiem! Zaproś innych przez PR.</span>' +
           '</div>' +
         '</div>';
     } else if (members.length > 0 || this._error) {
@@ -404,7 +404,7 @@
       body =
         '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            '<span>This site isn\u2019t a member yet. <a href="' + esc(fallbackAnchor) + '" part="link">Join the ring \u2192</a></span>' +
+            '<span>Ta strona nie jest jeszcze członkiem. <a href="' + esc(fallbackAnchor) + '" part="link">Dołącz do kręgu \u2192</a></span>' +
           '</div>' +
           errLine +
         '</div>';
@@ -412,7 +412,7 @@
       body =
         '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            '<span>Checking membership\u2026</span>' +
+            '<span>Sprawdzanie członkostwa\u2026</span>' +
           '</div>' +
         '</div>';
     }
@@ -427,7 +427,7 @@
       }).join("");
       listHtml =
         '<details id="wbr-members" class="wbr-list" part="list">' +
-          '<summary part="summary">Members (' + members.length + ')</summary>' +
+          '<summary part="summary">Członkowie (' + members.length + ')</summary>' +
           '<ul>' + items + '</ul>' +
         '</details>';
     }
