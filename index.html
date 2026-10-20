@@ -16,7 +16,7 @@
 
   <main>
     <section class="card">
-      <h2>Dlaczego to powstaje?</h2>
+      <h2>Dlaczego Web Ring?</h2>
       <p>Social media dawno przejęły kontrolę nad tym, co widzimy w sieci. Algorytmy dobierają treści pod kątem kliknięć i reklam, a nie ich wartości dla czytelnika. W efekcie nawet jeśli tworzysz świetną stronę, nikt na nią nie trafi, dopóki algorytm nie zdecyduje inaczej.</p>
       <p><strong>Celem tego projektu jest wyrwanie się z tej pętli.</strong> Wracamy do pomysłu sprzed trzydziestu lat: niezależnych stron, które ręcznie linkują do siebie nawzajem, tworząc krąg. Czytelnik sam decyduje, dokąd pójdzie dalej &mdash; bez feedu, bez cenzury, bez „polecanych dla ciebie”. Zamiast tego mamy po prostu sąsiada w sieci.</p>
       <p>Cały projekt jest świadomie śmiesznie mały: jeden plik <code>JSON</code>, jeden skrypt, jeden własny element HTML. Dołączenie zajmuje mniej więcej piętnaście minut &mdash; a potem Twoja strona znów jest częścią czegoś większego niż ona sama.</p>
@@ -24,7 +24,7 @@
 
     <section class="card">
       <h2>WebRing banner</h2>
-      <p>Poniższy widget to niestandardowy element <code>&lt;git-webring&gt;</code>. Kiedy ktoś otworzy Twoją stronę widget sam pobiera z repozytorium listę innych członków kręgu z pliku <a href="members.json"><code>members.json</code></a>.</p>
+      <p>Poniższy widget to niestandardowy element <code>&lt;git-webring&gt;</code>. Kiedy ktoś otworzy Twoją stronę widget sam pobiera z repozytorium listę innych członków kręgu z pliku <a href="members.json" target="_blank" rel="noopener"><code>members.json</code></a>.</p>
 
       <script type="application/json" id="webring-members">[{"id":"jesienna-gaweda","name":"Jesienna Gawęda","url":"https://jesienna-gaweda.example/","added":"2026-02-01","icon":"./demo-logo.svg"},{"id":"torodrogowanie","name":"Torodrogowanie.pl","url":"https://torodrogowanie.example/","added":"2026-04-15","icon":"./demo-logo.svg","logo":"./demo-logo.svg"},{"id":"piles-nie-prowadz","name":"Piłeś, Nie Prowadź","url":"https://piles-nie-prowadz.example/","added":"2026-08-30","icon":"./demo-logo.svg"}]</script>
       <git-webring site="https://torodrogowanie.example/" theme="auto"></git-webring>
@@ -62,7 +62,7 @@
         <li>
           <strong>Wyślij Pull Request (PR) na GitHubie.</strong> Nie musisz być programistą &mdash; wystarczy darmowe konto na GitHubie. Krok po kroku:
           <ol>
-            <li>Otwórz plik <a href="https://github.com/mdybal/git-webring/blob/main/members.json"><code>members.json</code></a> w naszym repozytorium.</li>
+            <li>Otwórz plik <a href="https://github.com/mdybal/git-webring/blob/main/members.json" target="_blank" rel="noopener"><code>members.json</code></a> w naszym repozytorium.</li>
             <li>Kliknij ikonkę ołówka ✏️ w prawym górnym rogu (<em>„Edit this file”</em>).</li>
             <li>Na końcu listy dopisz swój obiekt (tak jak w przykładzie wyżej).</li>
             <li>Na dole strony kliknij przycisk <em>„Propose changes”</em>.</li>
@@ -116,11 +116,103 @@ git-webring::part(status) { text-transform: uppercase; letter-spacing: .04em; fo
 git-webring::part(list)   { display: none; }   /* ukryj listę wszystkich członków */</code></pre>
       <p>Dostępne części: <code>box</code>, <code>logo</code>, <code>bar</code>, <code>title</code>, <code>help</code>, <code>row</code>, <code>link</code>, <code>sep</code>, <code>status</code>, <code>list</code>, <code>summary</code>.</p>
       <p>Dzięki temu możesz np. ukryć listę wszystkich członków, zmienić znak separatora między linkami albo wymusić konkretną czcionkę tylko dla nawigacji &mdash; bez modyfikowania samego widgetu.</p>
+
+      <h3>Przykład: ciemny motyw z neonową zielenią i nowoczesną czcionką</h3>
+      <p>Poniższy fragment łączy oba mechanizmy: wymusza ciemny motyw atrybutem <code>theme="dark"</code>, ustawia zmienne CSS na ciemną paletę z zielonym neonem i dorzuca parę reguł <code>::part()</code> dla delikatnej poświaty oraz typografii o „techno” charakterze. Poniżej działa podgląd &mdash; sam kod CSS jest ukryty pod przyciskiem:</p>
+<style>
+git-webring[theme="dark"] {
+  /* ciemna baza */
+  --wbr-bg: #0a0f0a;
+  --wbr-color: #e8ffe8;
+  --wbr-border: #00ff88;
+
+  /* neonowe akcenty: intensywna zieleń */
+  --wbr-accent: #39ff14;
+  --wbr-accent-2: #00ffaa;
+  --wbr-strip: linear-gradient(90deg, #002b16, #004d28, #002b16);
+
+  /* nowoczesna, geometryczna czcionka */
+  --wbr-font: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --wbr-font-size: 13px;
+  --wbr-logo-size: 22px;
+  --wbr-radius: 2px;
+}
+
+/* delikatna poświata neonu wokół ramki */
+git-webring[theme="dark"]::part(box) {
+  box-shadow: 0 0 16px rgba(57, 255, 20, .35),
+              inset 0 0 0 1px rgba(57, 255, 20, .2);
+}
+
+/* efekt świecenia tekstu w linkach */
+git-webring[theme="dark"]::part(link) {
+  text-shadow: 0 0 4px var(--wbr-accent);
+  transition: text-shadow .15s ease, color .15s ease;
+}
+git-webring[theme="dark"]::part(link):hover {
+  color: #ffffff;
+  text-shadow: 0 0 8px #ffffff, 0 0 16px var(--wbr-accent);
+}
+
+/* kapitaliki w nagłówku i statusie dla bardziej „techno” charakteru */
+git-webring[theme="dark"]::part(title),
+git-webring[theme="dark"]::part(status) {
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+</style>
+      <git-webring site="https://torodrogowanie.example/" theme="dark"></git-webring>
+      <details>
+        <summary>Pokaż kod CSS</summary>
+<pre><code>git-webring[theme="dark"] {
+  /* ciemna baza */
+  --wbr-bg: #0a0f0a;
+  --wbr-color: #e8ffe8;
+  --wbr-border: #00ff88;
+
+  /* neonowe akcenty: intensywna zieleń */
+  --wbr-accent: #39ff14;
+  --wbr-accent-2: #00ffaa;
+  --wbr-strip: linear-gradient(90deg, #002b16, #004d28, #002b16);
+
+  /* nowoczesna, geometryczna czcionka */
+  --wbr-font: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --wbr-font-size: 13px;
+  --wbr-logo-size: 22px;
+  --wbr-radius: 2px;
+}
+
+/* delikatna poświata neonu wokół ramki */
+git-webring[theme="dark"]::part(box) {
+  box-shadow: 0 0 16px rgba(57, 255, 20, .35),
+              inset 0 0 0 1px rgba(57, 255, 20, .2);
+}
+
+/* efekt świecenia tekstu w linkach */
+git-webring[theme="dark"]::part(link) {
+  text-shadow: 0 0 4px var(--wbr-accent);
+  transition: text-shadow .15s ease, color .15s ease;
+}
+git-webring[theme="dark"]::part(link):hover {
+  color: #ffffff;
+  text-shadow: 0 0 8px #ffffff, 0 0 16px var(--wbr-accent);
+}
+
+/* kapitaliki w nagłówku i statusie dla bardziej „techno” charakteru */
+git-webring[theme="dark"]::part(title),
+git-webring[theme="dark"]::part(status) {
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}</code></pre>
+<p>Widget wstaw z atrybutem <code>theme="dark"</code>, żeby ta stylizacja działała niezależnie od ustawienia jasny/ciemny w systemie odwiedzającego:</p>
+<pre><code>&lt;git-webring site="https://twojastrona.example/" theme="dark"&gt;&lt;/git-webring&gt;</code></pre>
+      </details>
+      
     </section>
   </main>
 
   <footer>
-    <p>Projekt hostowany jest jak zwykłe repozytorium git. Zrób fork, edytuj <a href="members.json">members.json</a>, wyślij pull request.</p>
+    <p>Projekt hostowany jest jak zwykłe repozytorium git. Zrób fork, edytuj <a href="members.json" target="_blank" rel="noopener">members.json</a>, wyślij pull request.</p>
   </footer>
 
   <script src="webring.js" defer></script>

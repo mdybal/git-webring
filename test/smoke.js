@@ -79,7 +79,7 @@ async function withMembers(members, site) {
   var e1 = await withMembers([{ id: "a", name: "Alice", url: "https://example.com/" }], "https://example.com/");
   var h1 = e1.shadowRoot.innerHTML;
   assert("single member shows the 'first member' message", /pierwszym członkiem/.test(h1), h1);
-  assert("single member omits prev/next/random", !/rel="prev"/.test(h1) && !/rel="next"/.test(h1) && !/rel="random"/.test(h1), h1);
+  assert("single member omits prev/next/random", !/rel="prev[" ]/.test(h1) && !/rel="next[" ]/.test(h1) && !/rel="random[" ]/.test(h1), h1);
 
   // 2) ring of 3, current = middle (bob)
   var ring = [
@@ -90,8 +90,8 @@ async function withMembers(members, site) {
   var e2 = await withMembers(ring, "https://bob.example/");
   var h2 = e2.shadowRoot.innerHTML;
   assert("bob appears among the list items", (h2.match(/<li>[^<]*<a [^>]*>Bob[^<]*<\/a>/g)||[]).length === 1, h2);
-  assert("bob prev is Alice",   /rel="prev"[^>]*>[^<]*Alice/.test(h2), h2);
-  assert("bob next is Carol",   /rel="next"[^>]*>Carol/.test(h2), h2);
+  assert("bob prev is Alice",   /rel="prev[" ][^>]*>[^<]*Alice/.test(h2), h2);
+  assert("bob next is Carol",   /rel="next[" ][^>]*>Carol/.test(h2), h2);
   assert("bob has 3 list items", (h2.match(/<li>/g) || []).length === 3, h2);
 
   // 3a) unknown site, empty registry -> fetch path
@@ -110,7 +110,7 @@ async function withMembers(members, site) {
     { id: "b", name: "Bob",   url: "https://bob.example/" }
   ], "https://alice.example");
   var h5 = e5.shadowRoot.innerHTML;
-  assert("missing trailing slash still matches", /rel="prev"[^>]*>[^<]*Bob/.test(h5), h5);
+  assert("missing trailing slash still matches", /rel="prev[" ][^>]*>[^<]*Bob/.test(h5), h5);
 
   // 5) wrap: first member's prev wraps to last
   var ring6 = [
@@ -120,12 +120,12 @@ async function withMembers(members, site) {
   ];
   var e6 = await withMembers(ring6, "https://alice.example/");
   var h6 = e6.shadowRoot.innerHTML;
-  assert("first member prev wraps to Carol", /rel="prev"[^>]*>[^<]*Carol/.test(h6), h6);
-  assert("first member next is Bob",         /rel="next"[^>]*>Bob/.test(h6), h6);
+  assert("first member prev wraps to Carol", /rel="prev[" ][^>]*>[^<]*Carol/.test(h6), h6);
+  assert("first member next is Bob",         /rel="next[" ][^>]*>Bob/.test(h6), h6);
   // last member's next wraps to first
   var e6b = await withMembers(ring6, "https://carol.example/");
   var h6b = e6b.shadowRoot.innerHTML;
-  assert("last member next wraps to Alice",   /rel="next"[^>]*>Alice/.test(h6b), h6b);
+  assert("last member next wraps to Alice",   /rel="next[" ][^>]*>Alice/.test(h6b), h6b);
 
   // 6) bad inline JSON
   document._elements.set("webring-members", { textContent: "{not-json" });
@@ -237,6 +237,20 @@ async function withMembers(members, site) {
   assert("part=\"link\" on at least the 4 nav <a>s (prev/random/next/list) + list items", (h13.match(/<a [^>]*part=\"link\"/g) || []).length >= 4, h13);
   assert("part=\"list\" + part=\"summary\" on the member details",
     /<details [^>]*part=\"list\"/.test(h13) && /<summary part=\"summary\"/.test(h13), h13);
+
+// 12b) All widget-generated <a> links open in a new tab (target="_blank")
+  //      and use rel="noopener" so the new page can't tabnab back.
+  assert("nav links (prev/next/random) have target=\"_blank\"",
+    /href="https:\/\/alice\.example\/"[^>]*target="_blank"/.test(h13) &&
+    /href="https:\/\/carol\.example\/"[^>]*target="_blank"/.test(h13), h13);
+  assert("nav links combine rel=\"<dir>\" + rel=\"noopener\"",
+    /rel="prev noopener"/.test(h13) &&
+    /rel="next noopener"/.test(h13) &&
+    /rel="random noopener"/.test(h13), h13);
+  assert("list-item <a>s have target=\"_blank\" rel=\"noopener\"",
+    (h13.match(/<li><a [^>]*target="_blank"[^>]*rel="noopener"/g) || []).length === 3, h13);
+  assert("help \"?\" link has target=\"_blank\" rel=\"noopener\"",
+    /class="wbr-help"[^>]*target="_blank"[^>]*rel="noopener"/.test(h13), h13);
 
   // 13) Per-member icon: when an entry has \"icon\", prev/next/random links render a thumbnail.
   var ringWithIcons = [

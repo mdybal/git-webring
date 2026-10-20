@@ -363,7 +363,7 @@
       var arrowBefore = (dir === "prev" ) ? "\u2190 " : "";
       var arrowAfter  = (dir === "next") ? " \u2192" : "";
       var inner = arrowBefore + memberIcon(m) + label + arrowAfter;
-      return '<a href="' + esc(m.url) + '" rel="' + esc(dir) + '" part="link">' + inner + '</a>';
+      return '<a href="' + esc(m.url) + '" target="_blank" rel="' + esc(dir) + ' noopener" part="link">' + inner + '</a>';
     };
 
     var barHtml =
@@ -404,7 +404,7 @@
       body =
         '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            '<span>Ta strona nie jest jeszcze członkiem. <a href="' + esc(fallbackAnchor) + '" part="link">Dołącz do kręgu \u2192</a></span>' +
+            '<span>Ta strona nie jest jeszcze członkiem. <a href="' + esc(fallbackAnchor) + '" target="_blank" rel="noopener" part="link">Dołącz do kręgu \u2192</a></span>' +
           '</div>' +
           errLine +
         '</div>';
@@ -423,7 +423,7 @@
         var icon = m && typeof m.icon === "string" && m.icon
           ? '<img class="wbr-jump-img" src="' + esc(m.icon) + '" alt="" loading="lazy" decoding="async"> '
           : "";
-        return '<li>' + icon + '<a href="' + esc(m.url) + '" part="link">' + esc(m.name) + '</a></li>';
+        return '<li>' + icon + '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" part="link">' + esc(m.name) + '</a></li>';
       }).join("");
       listHtml =
         '<details id="wbr-members" class="wbr-list" part="list">' +
