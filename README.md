@@ -21,12 +21,12 @@ Two lines of HTML:
 
 ```html
 <script src="https://mdybal.github.io/git-webring/webring.js" defer></script>
-<git-webring site="https://yoursite.example/" logo="/webring-logo.svg"></git-webring>
+<git-webring site="https://yoursite.example/"></git-webring>
 ```
 
 The widget renders prev / random / next / list links to the other ring members, plus your position in the ring ("Member 3 of 17"). It works offline via a 5-minute `localStorage` cache.
 
-The `logo` attribute is optional. If present, **the logo must be hosted on the same page as the widget itself** &mdash; a relative URL like `/webring-logo.svg`, resolved against your site. Cross-origin URLs and inline `data:` URIs are silently rejected; the gadget falls back to a text label.
+The brand image for your slot in the ring isn't a widget attribute &mdash; add an optional `"logo"` field to your entry in [`members.json`](./members.json): a relative URL like `/webring-logo.svg`, resolved against your own site. It must **resolve to the same origin as the page hosting the widget** (no cross-origin, no inline `data:` URIs); otherwise the widget silently falls back to the text label "RPG Web Ring". This way each member keeps a self-contained brand and the widget never makes third-party brand requests on a reader's behalf.
 
 ### Why `<git-webring>` and not just `<webring>`?
 
@@ -39,9 +39,6 @@ Custom element names are required to contain a hyphen (per the [custom elements 
 | `site`      | yes   | &mdash;        | Your site's homepage URL. Drives ring order lookup. |
 | `data-src`  | no    | `./members.json` next to `webring.js` | URL of the registry JSON. |
 | `theme`     | no    | `auto`         | `light` / `dark` / `auto`. `auto` inherits the visitor's OS color scheme. |
-| `logo`      | no    | _text label_   | Relative URL to a brand image, **same origin** as the page. |
-| `logo-width`  | no | `auto`       | Inline width on the `<img>` tag (`"32px"`). |
-| `logo-height` | no | `18px`       | Inline height on the `<img>` tag (`"32px"`). |
 
 ### Customizing the look
 
@@ -100,7 +97,9 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md). Short version: open a PR that adds y
   "id": "your-handle",
   "name": "Your Display Name",
   "url": "https://yoursite.example/",
-  "added": "YYYY-MM-DD"
+  "added": "YYYY-MM-DD",
+  "icon": "/avatar.png",                   // optional
+  "logo": "/webring-logo.svg"              // optional
 }
 ```
 

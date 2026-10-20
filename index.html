@@ -26,15 +26,14 @@
       <h2>WebRing banner</h2>
       <p>Poniższy widget to niestandardowy element <code>&lt;git-webring&gt;</code>. Kiedy ktoś otworzy Twoją stronę widget sam pobiera z repozytorium listę innych członków kręgu z pliku <a href="members.json"><code>members.json</code></a>.</p>
 
-      <script type="application/json" id="webring-members">[{"id":"alice","name":"Alice Example","url":"https://alice.example/","added":"2026-01-01","icon":"./demo-logo.svg"},{"id":"bob","name":"Bob Example","url":"https://bob.example/","added":"2026-01-01","icon":"./demo-logo.svg"},{"id":"carol","name":"Carol Example","url":"https://carol.example/","added":"2026-01-01","icon":"./demo-logo.svg"}]</script>
-      <git-webring site="https://bob.example/" logo="./demo-logo.svg" theme="auto"></git-webring>
+      <script type="application/json" id="webring-members">[{"id":"alice","name":"Alice Example","url":"https://alice.example/","added":"2026-01-01","icon":"./demo-logo.svg"},{"id":"bob","name":"Bob Example","url":"https://bob.example/","added":"2026-01-01","icon":"./demo-logo.svg","logo":"./demo-logo.svg"},{"id":"carol","name":"Carol Example","url":"https://carol.example/","added":"2026-01-01","icon":"./demo-logo.svg"}]</script>
+      <git-webring site="https://bob.example/" theme="auto"></git-webring>
       <p>Kod HTML widgetu, który trzeba dodać na stronie znajdziesz poniżej.</p>
       <details>
-        
+
         <summary>Pokaż kod HTML</summary>
 <pre><code>&lt;script src="https://mdybal.github.io/git-webring/webring.js" defer&gt;&lt;/script&gt;
-&lt;git-webring site="https://twojastrona.example/" logo="/webring-logo.svg"&gt;&lt;/git-webring&gt;</code></pre>
-        <p>Atrybut <code>logo</code> jest opcjonalny. Jeśli go użyjesz, obrazek musi być hostowany w obrębie Twojej strony (adres względny, bez <code>data:</code>, bez innej domeny) &mdash; dzięki temu widget nie odpytuje zewnętrznych serwerów w imieniu Twojego czytelnika.</p>
+&lt;git-webring site="https://twojastrona.example/"&gt;&lt;/git-webring&gt;</code></pre>
       </details>
     </section>
 
@@ -53,9 +52,12 @@
   "id": "twoj-handle",
   "name": "Twoja Nazwa Wyświetlana",
   "url": "https://twojastrona.example/",
-  "added": "RRRR-MM-DD"
+  "added": "RRRR-MM-DD",
+  "icon": "/avatar.png",               // opcjonalne
+  "logo": "/webring-logo.svg"          // opcjonalne
 }</code></pre>
-          <p>Nowe wpisy trafiają zawsze na koniec &mdash; w ten sposób naturalnie stajesz obok osoby, która dołączyła tuż przed Tobą. Jeśli chcesz odejść z kręgu, w podobnym PR usuń swój obiekt z listy.</p>
+          <p><code>icon</code> to mała miniaturka wyświetlana obok nazwy Twojej strony na paskach nawigacji innych członków. <code>logo</code> to obrazek, który pojawi się w ramce widżetu <em>na Twojej stronie</em> &mdash; podaj ścieżkę względną do pliku hostowanego na Twojej stronie. </p>
+          <p>Nowe wpisy trafiają zawsze na końcu &mdash; w ten sposób naturalnie stajesz obok osoby, która dołączyła tuż przed Tobą. Jeśli chcesz odejść z kręgu, w podobnym PR usuń swój obiekt z listy.</p>
         </li>
         <li>
           <strong>Wyślij Pull Request (PR) na GitHubie.</strong> Nie musisz być programistą &mdash; wystarczy darmowe konto na GitHubie. Krok po kroku:

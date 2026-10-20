@@ -134,42 +134,86 @@ async function withMembers(members, site) {
   e7.setAttribute("site", "https://x.example/");
   await e7._load();
   assert("bad inline JSON surfaces error styling", /wbr-err/.test(e7.shadowRoot.innerHTML), e7.shadowRoot.innerHTML);
-
-  // 7) logo slot: same-origin relative URL renders an <img>
-  var e8 = await withMembers(ring, "https://bob.example/");
+// 7) logo slot: a relative "logo" on the CURRENT member (matched by site)
+  //     renders an <img>; same-origin enforcement is preserved.
+  var ringWithLogo = [
+    { id: "a", name: "Alice", url: "https://alice.example/" },
+    { id: "b", name: "Bob",   url: "https://bob.example/",   logo: "/webring-logo.svg" },
+    { id: "c", name: "Carol", url: "https://carol.example/" }
+  ];
+  var e8 = await withMembers(ringWithLogo, "https://bob.example/");
   e8.shadowRoot = { innerHTML: "" };
-  e8.setAttribute("logo", "/webring-logo.svg");
   e8._render();
   var h8 = e8.shadowRoot.innerHTML;
-  assert("logo renders <img class=\"wbr-logo\">", /<img class=\"wbr-logo\"[^>]*src=\"[^"]*webring-logo\.svg\"/.test(h8), h8);
-  assert("logo <img> carries part=\"logo\"", /class=\"wbr-logo\"[^>]*part=\"logo\"/.test(h8), h8);
-  assert("logo <img> is decorative (alt empty) next to the visible title", /<img class=\"wbr-logo\"[^>]*alt=\"\"/.test(h8) && /RPG Web Ring/.test(h8), h8);
+  assert("member logo renders <img class=\"wbr-logo\">",
+    /<img class=\"wbr-logo\"[^>]*src=\"[^\"]*webring-logo\.svg\"/.test(h8), h8);
+  assert("member logo <img> carries part=\"logo\"",
+    /class=\"wbr-logo\"[^>]*part=\"logo\"/.test(h8), h8);
+  assert("member logo <img> is decorative (alt empty) next to the visible title",
+    /<img class=\"wbr-logo\"[^>]*alt=\"\"/.test(h8) && /RPG Web Ring/.test(h8), h8);
+  assert("non-current member's logo is NOT used",
+    !/src=\"[^\"]*alice/.test(h8), h8);
 
-  // 8) logo: cross-origin absolute URL is rejected, falls back to text label
-  var e9 = await withMembers(ring, "https://bob.example/");
+  // 7b) Obsolete widget-level `logo` attribute is silently ignored:
+  // only the JSON entry's "logo" is read.
+  var e8b = await withMembers(ringWithLogo, "https://bob.example/");
+  e8b.shadowRoot = { innerHTML: "" };
+  e8b.setAttribute("logo", "/some-other.svg");
+  e8b._render();
+  var h8b = e8b.shadowRoot.innerHTML;
+  assert("logo attribute on the element is ignored when JSON entry has logo",
+    /<img class=\"wbr-logo\"[^>]*src=\"[^\"]*webring-logo\.svg\"/.test(h8b) &&
+    !/some-other\.svg/.test(h8b), h8b);
+
+  // 7c) A member WITHOUT "logo" falls back to the text label, even when a
+  // sibling member has one.
+  var e8c = await withMembers(ringWithLogo, "https://alice.example/");
+  e8c.shadowRoot = { innerHTML: "" };
+  e8c._render();
+  var h8c = e8c.shadowRoot.innerHTML;
+  assert("member WITHOUT \"logo\" renders text label (no <img class=\"wbr-logo\">)",
+    !/<img class=\"wbr-logo\"/.test(h8c) &&
+    /<span class=\"wbr-label\" part=\"logo\">RPG Web Ring<\/span>/.test(h8c), h8c);
+
+  // 8) logo: cross-origin absolute URL is rejected.
+  var ringCrossOrigin = [
+    { id: "a", name: "Alice", url: "https://alice.example/" },
+    { id: "b", name: "Bob",   url: "https://bob.example/",   logo: "https://other.example/x.svg" },
+    { id: "c", name: "Carol", url: "https://carol.example/" }
+  ];
+  var e9 = await withMembers(ringCrossOrigin, "https://bob.example/");
   e9.shadowRoot = { innerHTML: "" };
-  e9.setAttribute("logo", "https://other.example/x.svg");
   e9._render();
   var h9 = e9.shadowRoot.innerHTML;
-  assert("cross-origin logo is rejected", !/<img class=\"wbr-logo\"/.test(h9), h9);
-  assert("logo-fallback renders text label inside <span part=\"logo\">", /<span class=\"wbr-label\" part=\"logo\">RPG Web Ring<\/span>/.test(h9), h9);
+  assert("cross-origin member logo is rejected", !/<img class=\"wbr-logo\"/.test(h9), h9);
+  assert("logo-fallback renders text label inside <span part=\"logo\">",
+    /<span class=\"wbr-label\" part=\"logo\">RPG Web Ring<\/span>/.test(h9), h9);
 
-  // 9) logo: data: URI is rejected (must be hosted on the page)
-  var e10 = await withMembers(ring, "https://bob.example/");
+  // 9) logo: data: URI is rejected (must be hosted on the page).
+  var ringDataUri = [
+    { id: "a", name: "Alice", url: "https://alice.example/" },
+    { id: "b", name: "Bob",   url: "https://bob.example/",   logo: "data:image/svg+xml;base64,AAAA" },
+    { id: "c", name: "Carol", url: "https://carol.example/" }
+  ];
+  var e10 = await withMembers(ringDataUri, "https://bob.example/");
   e10.shadowRoot = { innerHTML: "" };
-  e10.setAttribute("logo", "data:image/svg+xml;base64,AAAA");
   e10._render();
   var h10 = e10.shadowRoot.innerHTML;
   assert("data: URI logo is rejected", !/<img class=\"wbr-logo\"/.test(h10), h10);
 
-  // 10) logo-height attr applies inline style on the <img>
-  var e11 = await withMembers(ring, "https://bob.example/");
+  // 10) Obsolete logo-width / logo-height attributes are ignored.
+  var e11 = await withMembers(ringWithLogo, "https://bob.example/");
   e11.shadowRoot = { innerHTML: "" };
-  e11.setAttribute("logo", "/webring-logo.svg");
+  e11.setAttribute("logo",        "/should-be-ignored.svg");
+  e11.setAttribute("logo-width",  "32px");
   e11.setAttribute("logo-height", "32px");
   e11._render();
   var h11 = e11.shadowRoot.innerHTML;
-  assert("logo-height inline-styles the <img>", /<img class=\"wbr-logo\"[^>]*style=\"[^"]*height:32px/.test(h11), h11);
+  assert("obsolete logo/logo-width/logo-height attrs do not affect the <img>",
+    /<img class=\"wbr-logo\"[^>]*src=\"[^\"]*webring-logo\.svg\"/.test(h11) &&
+    !/<img class=\"wbr-logo\"[^>]*style=/.test(h11) &&
+    !/should-be-ignored\.svg/.test(h11), h11);
+
 
   // 11) Default theme = auto; stylesheet exposes auto/media-query rules.
   var e12 = await withMembers([{ id:"a", name:"Alice", url:"https://alice.example/" }], "https://alice.example/");

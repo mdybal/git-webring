@@ -3,7 +3,7 @@
  *
  * Embed on your member page (two lines):
  *   <script src="https://mdybal.github.io/git-webring/webring.js" defer></script>
- *   <git-webring site="https://yoursite.example/" logo="/webring-logo.svg"></git-webring>
+ *   <git-webring site="https://yoursite.example/"></git-webring>
  *
  * The widget renders prev / random / next / list links to the other ring members,
  * plus your position ("Member 3 of 17"). It works offline via a 5-minute
@@ -20,14 +20,6 @@
  *   theme         (optional) "light" | "dark" | "auto". Default "auto":
  *                 "auto" respects the visitor's prefers-color-scheme so the
  *                 widget blends with the host page's OS theme.
- *   logo          (optional) Relative URL to a brand image. Must resolve to
- *                 the SAME origin as the page hosting the widget (no
- *                 cross-origin, no data: URIs, no blob:). Falls back to a
- *                 text label "git-webring" when missing or rejected.
- *   logo-width    (optional) Inline width on the brand <img>, e.g. "32px".
- *                 Default "auto" (height follows --wbr-logo-size, set on :host).
- *   logo-height   (optional) Inline height on the brand <img>, e.g. "32px".
- *                 Default "18px" via --wbr-logo-size if logo-width not set.
  *
  * ── Theming (CSS custom properties) ───────────────────────────────────────
  * The widget exposes a small set of tokens on :host. They CASCADE IN from
@@ -69,13 +61,26 @@
  *   git-webring::part(summary)   the <summary> of the member list
  *
  * ── Members ───────────────────────────────────────────────────────────────
- * Each entry in members.json may optionally include "icon" (string URL).
- * When present, the prev/next/random links render a tiny thumbnail; the
- * member list also shows the icon next to each name. SCHEMA IS ADDITIVE —
- * older entries without "icon" continue to render as before.
+ * Each entry in members.json may optionally include:
+ *
+ *   "icon"  (string URL) — tiny thumbnail next to the member's name on
+ *                          the OTHER sites' nav bars AND inside the
+ *                          member list. Used verbatim as an <img src>;
+ *                          no same-origin restriction (cross-origin OK
+ *                          for an external avatar CDN).
+ *   "logo"  (string URL) — brand image that owns the widget on THIS
+ *                          member's page (the page that hosts the
+ *                          widget). Must resolve to the host page's
+ *                          origin: a relative URL is recommended, no
+ *                          cross-origin, no data:, no blob:. Falls back
+ *                          to a text label when missing or rejected.
+ *
+ * SCHEMA IS ADDITIVE — older entries without "icon"/"logo" render as
+ * before (no thumbnail / text label).
  *
  *   { "id": "...", "name": "...", "url": "...", "added": "YYYY-MM-DD",
- *     "icon": "/avatar.png" }   ← optional
+ *     "icon": "/avatar.png",            ← optional
+ *     "logo": "/webring-logo.svg" }     ← optional
  *
  * ── In-page override (self-hosting) ──────────────────────────────────────
  * Place <script type="application/json" id="webring-members">[ ... ]</script>
@@ -100,13 +105,13 @@
   var ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ESC[c]; }); };
 
-  // Resolve the `logo` attribute to a usable URL.
-  // Policy: only relative URLs hosted on the SAME origin as the page that
-  // contains the widget are accepted. data: / blob: are rejected because
-  // they're not "hosted on the member page". Cross-origin (https://other…)
-  // is rejected to keep zero third-party requests for branding.
-  // Returns the resolved URL string or null when rejected (caller falls
-  // back to a text label).
+  // Resolve a member-supplied "logo" URL to a usable href.
+  // Inputs come from a JSON registry entry whose owner is the page hosting
+  // the widget (the entry's URL matched `this.site`). We still resolve
+  // against the *host page's* location to ensure the logo is hosted on
+  // the SAME origin as the page — no cross-origin requests, no data:/
+  // blob: URIs. Returns the resolved absolute URL or null when rejected
+  // (caller falls back to a text label).
   function resolveLogo(value) {
     if (!value) return null;
     if (/^\s*(data|blob):/i.test(value)) {
@@ -158,7 +163,7 @@
   WebringElement.prototype.constructor = WebringElement;
 
   Object.defineProperty(WebringElement, "observedAttributes", {
-    get: function () { return ["site", "data-src", "theme", "logo", "logo-width", "logo-height"]; }
+    get: function () { return ["site", "data-src", "theme"]; }
   });
 
   WebringElement.prototype._root = function () {
@@ -179,15 +184,6 @@
   });
   Object.defineProperty(WebringElement.prototype, "theme", {
     get: function () { return this.getAttribute("theme") || "auto"; }
-  });
-  Object.defineProperty(WebringElement.prototype, "logoAttr", {
-    get: function () { return this.getAttribute("logo"); }
-  });
-  Object.defineProperty(WebringElement.prototype, "logoWidthAttr", {
-    get: function () { return this.getAttribute("logo-width"); }
-  });
-  Object.defineProperty(WebringElement.prototype, "logoHeightAttr", {
-    get: function () { return this.getAttribute("logo-height"); }
   });
 
   WebringElement.prototype.dataSrc = function () {
@@ -342,15 +338,15 @@
     var fallbackAnchor = members[0] ? members[0].url : "#";
     var showingRing = idx >= 0 && total > 0;
 
-    // Brand mark: <img> if a same-origin logo resolves, otherwise text.
-    var logoSrc = resolveLogo(this.logoAttr);
+    // Brand mark: this is the host member's own logo (read from the
+    // "logo" field of their entry in members.json). <img> when a
+    // same-origin URL resolves, otherwise a text label.
+    var me = (idx >= 0 && idx < total) ? members[idx] : null;
+    var rawLogo = me && typeof me.logo === "string" ? me.logo : "";
+    var logoSrc = resolveLogo(rawLogo);
     var labelHtml;
     if (logoSrc) {
-      var styleBits = "";
-      if (this.logoHeightAttr) styleBits += "height:" + esc(this.logoHeightAttr) + ";";
-      if (this.logoWidthAttr)  styleBits += "width:"  + esc(this.logoWidthAttr)  + ";";
-      var styleAttr = styleBits ? ' style="' + styleBits + '"' : "";
-      labelHtml = '<img class="wbr-logo" src="' + esc(logoSrc) + '" alt="" loading="lazy" decoding="async" part="logo"' + styleAttr + '>' +
+      labelHtml = '<img class="wbr-logo" src="' + esc(logoSrc) + '" alt="" loading="lazy" decoding="async" part="logo">' +
         '<span class="wbr-label" part="title">RPG Web Ring</span>';
     } else {
       labelHtml = '<span class="wbr-label" part="logo">RPG Web Ring</span>';
@@ -372,7 +368,7 @@
 
     var barHtml =
       '<div class="wbr-bar" part="bar">' + labelHtml +
-        '<a class="wbr-help" part="help" href="https://github.com/mdybal/git-webring" target="_blank" rel="noopener" title="What is this? (git-webring on GitHub)" aria-label="About this webring">?</a>' +
+        '<a class="wbr-help" part="help" href="https://mdybal.github.io/git-webring/" target="_blank" rel="noopener" title="What is this? (git-webring on GitHub)" aria-label="About this webring">?</a>' +
       '</div>';
     var body;
     if (showingRing && total > 1) {
