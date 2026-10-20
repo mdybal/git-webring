@@ -36,17 +36,20 @@
  * tracks currentColor / inherits from the page, so by default the gadget
  * visually belongs to the page.
  *
- *   --wbr-color       text color         (default: currentColor)
- *   --wbr-bg          panel background   (default: transparent)
- *   --wbr-border      border color       (default: currentColor)
- *   --wbr-accent      link color / only  (default: #0366d6 light, #58a6ff dark)
+ *   --wbr-color       text color         (default: #3a2412 parchment / #f1dfb8 night)
+ *   --wbr-bg          panel background   (default: #ecdcb8 / #2b1b10)
+ *   --wbr-accent-2    secondary accent   (default: #1d6fd1; glow + visited links)
+ *   --wbr-strip       title-strip gradient (default: copper→ember→brass)
+ *   --wbr-shadow      hard offset shadow color (default: #5b3a14)
+ *   --wbr-border      border color       (default: #b07a1f brass)
+ *   --wbr-accent      link color         (default: #a8420f light, #ffc857 dark)
  *                     brand-specific color
- *   --wbr-radius      corner radius      (default: 6px)
- *   --wbr-pad-y       vertical padding   (default: 10px)
- *   --wbr-pad-x       horizontal padding (default: 14px)
- *   --wbr-gap         spacing between    (default: 8px)
+ *   --wbr-radius      corner radius      (default: 3px)
+ *   --wbr-pad-y       vertical padding   (default: 8px)
+ *   --wbr-pad-x       horizontal padding (default: 12px)
+ *   --wbr-gap         spacing between    (default: 6px)
  *                     nav links
- *   --wbr-font        font family        (default: inherit — match page)
+ *   --wbr-font        font family        (default: Georgia, serif)
  *   --wbr-font-size   text size          (default: 14px)
  *   --wbr-logo-size   brand-mark height  (default: 18px)
  *
@@ -55,6 +58,9 @@
  *
  *   git-webring::part(box)       the framed container
  *   git-webring::part(logo)      the brand mark (image or text label)
+ *   git-webring::part(bar)       the full-width title bar (logo, title, "?" help link)
+ *   git-webring::part(title)     the "RPG Web Ring" title next to an image logo
+ *   git-webring::part(help)      the "?" link to the GitHub page
  *   git-webring::part(row)       the prev/random/next/list row
  *   git-webring::part(link)      every nav <a> (incl. list items)
  *   git-webring::part(sep)       the · separator between nav links
@@ -263,42 +269,69 @@
     // any of them by setting the same custom property on :root, html, body,
     // or directly on the <git-webring> element. Defaults intentionally
     // inherit from currentColor so the widget visually belongs to the page.
+    // Default look: "guild banner" - a parchment plaque with a brass bevel
+    // (88x31-badge style), palette borrowed from twojestarerpg.pl.
+    var night = "--wbr-color:#f1dfb8;--wbr-bg:#2b1b10;--wbr-border:#c9922e;" +
+      "--wbr-accent:#ffc857;--wbr-accent-2:#4aa3ff;--wbr-strip:linear-gradient(90deg,#5a2a12,#b4501f,#7a5410);" +
+      "--wbr-shadow:#0e0803;";
     return [
       ":host{display:block;",
-      "font:var(--wbr-font-size,14px)/1.45 var(--wbr-font,inherit);",
-      "--wbr-color:currentColor;",
-      "--wbr-bg:transparent;",
-      "--wbr-border:currentColor;",
-      "--wbr-accent:#0366d6;",
-      "--wbr-radius:6px;",
-      "--wbr-pad-y:10px;",
-      "--wbr-pad-x:14px;",
-      "--wbr-gap:8px;",
+      "font:var(--wbr-font-size,14px)/1.45 var(--wbr-font,Georgia,'Times New Roman',serif);",
+      "--wbr-color:#3a2412;",
+      "--wbr-bg:#ecdcb8;",
+      "--wbr-border:#b07a1f;",
+      "--wbr-accent:#a8420f;",
+      "--wbr-accent-2:#1d6fd1;",
+      "--wbr-strip:linear-gradient(90deg,#b4501f,#f08a24,#e3b341,#f08a24,#b4501f);",
+      "--wbr-shadow:#5b3a14;",
+      "--wbr-radius:3px;",
+      "--wbr-pad-y:8px;",
+      "--wbr-pad-x:12px;",
+      "--wbr-gap:6px;",
       "--wbr-font-size:14px;",
       "--wbr-logo-size:18px;",
-      "color:var(--wbr-color);",
-      "background:var(--wbr-bg);}",
+      "color:var(--wbr-color);}",
       ":host([hidden]){display:none;}",
-      // Auto / explicit theme: only the brand-specific accent color shifts.
-      // "auto" = "follow system when no explicit theme is set".
+      // "auto" follows the visitor's OS scheme; light/dark force a variant.
       "@media (prefers-color-scheme: dark){",
-      ":host(:not([theme=light])){--wbr-accent:#58a6ff;}}",
-      ":host([theme=dark]){--wbr-accent:#58a6ff;}",
-      ":host([theme=light]){--wbr-accent:#0366d6;}",
-      // Layout.
-      ".wbr-box{border:1px solid var(--wbr-border);border-radius:var(--wbr-radius);padding:var(--wbr-pad-y) var(--wbr-pad-x);background:var(--wbr-bg);}",
-      ".wbr-row{display:flex;flex-wrap:wrap;gap:var(--wbr-gap);align-items:center;}",
-      ".wbr-row a,.wbr-row a:visited{color:var(--wbr-accent);text-decoration:none;}",
-      ".wbr-row a:hover,.wbr-row a:focus,.wbr-row a:active{text-decoration:underline;}",
-      ".wbr-label{font-weight:600;display:inline-flex;align-items:center;gap:6px;}",
-      ".wbr-logo{height:var(--wbr-logo-size);width:auto;vertical-align:middle;display:inline-block;}",
-      ".wbr-sep{color:var(--wbr-color);opacity:.4;}",
-      ".wbr-status{font-size:12px;color:var(--wbr-color);opacity:.7;margin-top:6px;}",
-      ".wbr-status.wbr-err{color:#b00;opacity:1;}",
+      ":host(:not([theme=light])){" + night + "}}",
+      ":host([theme=dark]){" + night + "}",
+      // Beveled plaque + hard offset shadow, 90s badge style.
+      ".wbr-box{border:3px double var(--wbr-border);border-radius:var(--wbr-radius);",
+      "padding:0 0 var(--wbr-pad-y);background:var(--wbr-bg);color:var(--wbr-color);",
+      "box-shadow:2px 2px 0 var(--wbr-shadow),inset 0 0 0 1px rgba(255,255,255,.35);overflow:hidden;}",
+      ".wbr-row{display:flex;flex-wrap:nowrap;gap:var(--wbr-gap);align-items:stretch;padding:var(--wbr-pad-y) var(--wbr-pad-x) 0;}",
+      ".wbr-row>:not(.wbr-sep){flex:1 1 0;min-width:0;text-align:center;justify-content:center;}",
+      ".wbr-row a,.wbr-row a:visited{display:inline-flex;align-items:center;justify-content:center;gap:4px;color:var(--wbr-accent);",
+      "font-weight:700;text-decoration:none;padding:3px 8px;border:2px outset var(--wbr-border);",
+      "border-radius:2px;background:rgba(255,255,255,.35);min-height:1.8em;}",
+      // Title bar: full-width gradient header (brand/title left, "?" right).
+      ".wbr-bar{display:flex;align-items:center;gap:8px;padding:3px 8px 3px var(--wbr-pad-x);background:var(--wbr-strip);",
+      "background-size:200% 100%;animation:wbr-shine 6s linear infinite;border-bottom:2px solid var(--wbr-border);}",
+      ".wbr-label{display:inline-block;font-family:Cinzel,'Trajan Pro',Georgia,serif;font-weight:700;font-size:12px;",
+      "letter-spacing:.12em;text-transform:uppercase;color:#fff4d6;text-shadow:1px 1px 0 rgba(0,0,0,.45);}",
+      ".wbr-label:before{content:'\\2726 ';}.wbr-label:after{content:' \\2726';}",
+      ".wbr-logo{height:var(--wbr-logo-size);width:auto;object-fit:contain;display:block;}",
+      ".wbr-help,.wbr-help:visited{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;",
+      "width:16px;height:16px;border-radius:50%;font:700 11px/1 Georgia,serif;color:#fff4d6;background:rgba(0,0,0,.3);",
+      "border:1px solid #fff4d6;text-decoration:none;}",
+      ".wbr-help:hover,.wbr-help:focus{background:var(--wbr-accent-2);outline:none;box-shadow:0 0 6px var(--wbr-accent-2);}",
+      ".wbr-row a:hover,.wbr-row a:focus{background:var(--wbr-strip);color:#fff4d6;text-decoration:none;outline:none;box-shadow:0 0 6px var(--wbr-accent-2);}",
+      ".wbr-row a:active{border-style:inset;transform:translate(1px,1px);}",
+      ".wbr-row a:focus-visible{outline:2px dotted var(--wbr-accent-2);outline-offset:2px;}",
+      ".wbr-sep{color:var(--wbr-accent);opacity:.6;font-size:10px;align-self:center;}",
+      // Status line (errors only — no "Member X of N" caption).
+      ".wbr-status{display:block;margin:4px var(--wbr-pad-x) 0;font:11px/1.5 ui-monospace,Consolas,monospace;color:var(--wbr-accent-2);opacity:.9;}",
+      ".wbr-status.wbr-err{color:#b74b3a;opacity:1;}",
       ".wbr-jump-img{height:calc(var(--wbr-logo-size) - 4px);width:auto;vertical-align:middle;}",
-      ".wbr-list{margin-top:8px;}",
-      ".wbr-list ul{margin:8px 0 0;padding-left:18px;}",
-      ".wbr-list summary{cursor:pointer;}"
+      ".wbr-list{margin:8px var(--wbr-pad-x) 0;padding:6px 0 0;border-top:2px dotted var(--wbr-border);}",
+      ".wbr-list summary{cursor:pointer;padding:2px 0;font-weight:700;color:var(--wbr-accent);}",
+      ".wbr-list ul{margin:0;padding:0;list-style:none;}",
+      ".wbr-list li{padding:3px 0;border-top:1px dotted var(--wbr-border);}",
+      ".wbr-list li a{color:var(--wbr-accent);}",
+      ".wbr-list li a:visited{color:var(--wbr-accent-2);}",
+      "@keyframes wbr-shine{to{background-position:-200% 0;}}",
+      "@media (prefers-reduced-motion: reduce){.wbr-bar{animation:none;}}"
     ].join("");
   };
 
@@ -317,9 +350,10 @@
       if (this.logoHeightAttr) styleBits += "height:" + esc(this.logoHeightAttr) + ";";
       if (this.logoWidthAttr)  styleBits += "width:"  + esc(this.logoWidthAttr)  + ";";
       var styleAttr = styleBits ? ' style="' + styleBits + '"' : "";
-      labelHtml = '<img class="wbr-logo" src="' + esc(logoSrc) + '" alt="git-webring" loading="lazy" decoding="async" part="logo"' + styleAttr + '>';
+      labelHtml = '<img class="wbr-logo" src="' + esc(logoSrc) + '" alt="" loading="lazy" decoding="async" part="logo"' + styleAttr + '>' +
+        '<span class="wbr-label" part="title">RPG Web Ring</span>';
     } else {
-      labelHtml = '<span class="wbr-label" part="logo">git-webring</span>';
+      labelHtml = '<span class="wbr-label" part="logo">RPG Web Ring</span>';
     }
 
     // Per-member icon (optional): small thumbnail inside the prev/next
@@ -336,6 +370,10 @@
       return '<a href="' + esc(m.url) + '" rel="' + esc(dir) + '" part="link">' + inner + '</a>';
     };
 
+    var barHtml =
+      '<div class="wbr-bar" part="bar">' + labelHtml +
+        '<a class="wbr-help" part="help" href="https://github.com/mdybal/git-webring" target="_blank" rel="noopener" title="What is this? (git-webring on GitHub)" aria-label="About this webring">?</a>' +
+      '</div>';
     var body;
     if (showingRing && total > 1) {
       var prev = members[(idx - 1 + total) % total];
@@ -345,28 +383,22 @@
       var random = members[randomIdx];
 
       body =
-        '<div class="wbr-box" part="box">' +
+        '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            labelHtml +
             linkHtml(prev, "prev", esc(prev.name)) +
-            '<span class="wbr-sep" part="sep" aria-hidden="true">\u00b7</span>' +
+            '<span class="wbr-sep" part="sep" aria-hidden="true">\u2726</span>' +
             linkHtml(random, "random", "random") +
-            '<span class="wbr-sep" part="sep" aria-hidden="true">\u00b7</span>' +
+            '<span class="wbr-sep" part="sep" aria-hidden="true">\u2726</span>' +
             linkHtml(next, "next", esc(next.name)) +
-            '<span class="wbr-sep" part="sep" aria-hidden="true">\u00b7</span>' +
-            '<a href="#wbr-members" part="link">list</a>' +
           '</div>' +
-          '<div class="wbr-status" part="status">Member ' + (idx + 1) + ' of ' + total + '.</div>' +
         '</div>';
     } else if (showingRing) {
       // Sole member: don't render meaningless prev/next/random.
       body =
-        '<div class="wbr-box" part="box">' +
+        '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            labelHtml +
             '<span>You\u2019re the first member! Invite others via PR.</span>' +
           '</div>' +
-          '<div class="wbr-status" part="status">Member 1 of 1.</div>' +
         '</div>';
     } else if (members.length > 0 || this._error) {
       // We have data (or tried-and-failed) but this site is not a member.
@@ -374,18 +406,16 @@
         ? '<div class="wbr-status wbr-err" part="status">' + esc(this._error) + '</div>'
         : "";
       body =
-        '<div class="wbr-box" part="box">' +
+        '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            labelHtml +
             '<span>This site isn\u2019t a member yet. <a href="' + esc(fallbackAnchor) + '" part="link">Join the ring \u2192</a></span>' +
           '</div>' +
           errLine +
         '</div>';
     } else {
       body =
-        '<div class="wbr-box" part="box">' +
+        '<div class="wbr-box" part="box">' + barHtml +
           '<div class="wbr-row" part="row">' +
-            labelHtml +
             '<span>Checking membership\u2026</span>' +
           '</div>' +
         '</div>';
@@ -400,14 +430,14 @@
         return '<li>' + icon + '<a href="' + esc(m.url) + '" part="link">' + esc(m.name) + '</a></li>';
       }).join("");
       listHtml =
-        '<details id="wbr-members" class="wbr-box wbr-list" part="list">' +
+        '<details id="wbr-members" class="wbr-list" part="list">' +
           '<summary part="summary">Members (' + members.length + ')</summary>' +
           '<ul>' + items + '</ul>' +
         '</details>';
     }
 
     this._root().innerHTML =
-      "<style>" + this._styles() + "</style>" + body + listHtml;
+      "<style>" + this._styles() + "</style>" + body.replace(/<\/div>$/, listHtml + "</div>");
   };
 
   if (!customElements.get("git-webring")) {

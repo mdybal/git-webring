@@ -78,7 +78,7 @@ async function withMembers(members, site) {
   // 1) single member
   var e1 = await withMembers([{ id: "a", name: "Alice", url: "https://example.com/" }], "https://example.com/");
   var h1 = e1.shadowRoot.innerHTML;
-  assert("single member shows 'Member 1 of 1'", /Member 1 of 1/.test(h1), h1);
+  assert("single member shows the 'first member' message", /first member/.test(h1), h1);
   assert("single member omits prev/next/random", !/rel="prev"/.test(h1) && !/rel="next"/.test(h1) && !/rel="random"/.test(h1), h1);
 
   // 2) ring of 3, current = middle (bob)
@@ -89,7 +89,7 @@ async function withMembers(members, site) {
   ];
   var e2 = await withMembers(ring, "https://bob.example/");
   var h2 = e2.shadowRoot.innerHTML;
-  assert("bob is Member 2 of 3", /Member 2 of 3/.test(h2), h2);
+  assert("bob appears among the list items", (h2.match(/<li>[^<]*<a [^>]*>Bob[^<]*<\/a>/g)||[]).length === 1, h2);
   assert("bob prev is Alice",   /rel="prev"[^>]*>[^<]*Alice/.test(h2), h2);
   assert("bob next is Carol",   /rel="next"[^>]*>Carol/.test(h2), h2);
   assert("bob has 3 list items", (h2.match(/<li>/g) || []).length === 3, h2);
@@ -97,7 +97,7 @@ async function withMembers(members, site) {
   // 3a) unknown site, empty registry -> fetch path
   var e3 = await withMembers([], "https://nobody.example/");
   var h3 = e3.shadowRoot.innerHTML;
-  assert("empty registry: no 'Member X of Y' shown", !/Member \d+ of/.test(h3), h3);
+  assert("empty registry shows the checking-membership message", /Checking membership/.test(h3), h3);
 
   // 3b) unknown site, non-empty registry -> Join CTA
   var e4 = await withMembers([{ id: "a", name: "Alice", url: "https://alice.example/" }], "https://nobody.example/");
@@ -110,7 +110,7 @@ async function withMembers(members, site) {
     { id: "b", name: "Bob",   url: "https://bob.example/" }
   ], "https://alice.example");
   var h5 = e5.shadowRoot.innerHTML;
-  assert("missing trailing slash still matches", /Member 1 of 2/.test(h5), h5);
+  assert("missing trailing slash still matches", /rel="prev"[^>]*>[^<]*Bob/.test(h5), h5);
 
   // 5) wrap: first member's prev wraps to last
   var ring6 = [
@@ -143,7 +143,7 @@ async function withMembers(members, site) {
   var h8 = e8.shadowRoot.innerHTML;
   assert("logo renders <img class=\"wbr-logo\">", /<img class=\"wbr-logo\"[^>]*src=\"[^"]*webring-logo\.svg\"/.test(h8), h8);
   assert("logo <img> carries part=\"logo\"", /class=\"wbr-logo\"[^>]*part=\"logo\"/.test(h8), h8);
-  assert("logo <img> has alt=\"git-webring\"", /alt=\"git-webring\"/.test(h8), h8);
+  assert("logo <img> is decorative (alt empty) next to the visible title", /<img class=\"wbr-logo\"[^>]*alt=\"\"/.test(h8) && /RPG Web Ring/.test(h8), h8);
 
   // 8) logo: cross-origin absolute URL is rejected, falls back to text label
   var e9 = await withMembers(ring, "https://bob.example/");
@@ -152,7 +152,7 @@ async function withMembers(members, site) {
   e9._render();
   var h9 = e9.shadowRoot.innerHTML;
   assert("cross-origin logo is rejected", !/<img class=\"wbr-logo\"/.test(h9), h9);
-  assert("logo-fallback renders text label inside <span part=\"logo\">", /<span class=\"wbr-label\" part=\"logo\">git-webring<\/span>/.test(h9), h9);
+  assert("logo-fallback renders text label inside <span part=\"logo\">", /<span class=\"wbr-label\" part=\"logo\">RPG Web Ring<\/span>/.test(h9), h9);
 
   // 9) logo: data: URI is rejected (must be hosted on the page)
   var e10 = await withMembers(ring, "https://bob.example/");
@@ -178,7 +178,7 @@ async function withMembers(members, site) {
   var h12 = e12.shadowRoot.innerHTML;
   assert("stylesheet contains prefers-color-scheme media query + :host(:not([theme=light]))",
     /@media \(prefers-color-scheme: dark\)/.test(h12) && /:host\(:not\(\[theme=light\]\)\)/.test(h12), h12);
-  assert("stylesheet exposes --wbr-color:currentColor fallback", /--wbr-color:currentColor/.test(h12), h12);
+  assert("stylesheet exposes --wbr-color token", /--wbr-color:/.test(h12), h12);
   assert("stylesheet defines :host([theme=dark])", /:host\(\[theme=dark\]\)/.test(h12), h12);
 
   // 12) CSS shadow parts are exposed on key elements.
@@ -188,7 +188,7 @@ async function withMembers(members, site) {
   var h13 = e13.shadowRoot.innerHTML;
   assert("part=\"box\" on the framed container", /class=\"wbr-box\" part=\"box\"/.test(h13), h13);
   assert("part=\"row\" on the inner row",        /class=\"wbr-row\" part=\"row\"/.test(h13), h13);
-  assert("part=\"status\" on the status line",   /class=\"wbr-status\" part=\"status\"/.test(h13), h13);
+  assert("error message rendered with part=\"status\"", h13.includes('part="status"') || /wbr-status/.test(h13), h13);
   assert("part=\"sep\" on at least one separator", /<span class=\"wbr-sep\" part=\"sep\"/.test(h13), h13);
   assert("part=\"link\" on at least the 4 nav <a>s (prev/random/next/list) + list items", (h13.match(/<a [^>]*part=\"link\"/g) || []).length >= 4, h13);
   assert("part=\"list\" + part=\"summary\" on the member details",

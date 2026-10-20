@@ -45,7 +45,7 @@ Custom element names are required to contain a hyphen (per the [custom elements 
 
 ### Customizing the look
 
-The widget is intentionally shaped to **blend in with the host page** (text color, font, and panel border all inherit from `currentColor` by default) while keeping its own identity (a single brand accent for the links, and a brand-mark slot for a logo).
+The default look is a **"guild banner"**: a 90s/00s-style webring badge (beveled buttons, gradient title strip, hit-counter status) painted in the parchment-and-brass palette of [twojestarerpg.pl](https://www.twojestarerpg.pl/). See [`proposal.html`](proposal.html) for three variants, including a loud 88×31 remix done with tokens only. Every colour is a `--wbr-*` token, so you can retune it to match your own site.
 
 You can tune it from your stylesheet two ways.
 
@@ -53,14 +53,17 @@ You can tune it from your stylesheet two ways.
 
 | Token | Default | What it controls |
 |-------|---------|------------------|
-| `--wbr-color`     | `currentColor`     | Text color. |
-| `--wbr-bg`        | `transparent`      | Panel background. |
-| `--wbr-border`    | `currentColor`     | Border color (rendered via `border: 1px solid &hellip;`). |
-| `--wbr-accent`    | `#0366d6` / `#58a6ff` (dark) | Only brand-specific color: link color. |
-| `--wbr-radius`    | `6px`              | Corner radius. |
-| `--wbr-pad-y` / `--wbr-pad-x` | `10px` / `14px` | Inner padding. |
-| `--wbr-gap`       | `8px`              | Spacing between nav links. |
-| `--wbr-font`      | `inherit`          | Font family (match the page). |
+| `--wbr-color`     | `#3a2412` / `#f1dfb8` (night) | Text color. |
+| `--wbr-bg`        | `#ecdcb8` / `#2b1b10` (night) | Panel background. |
+| `--wbr-accent-2`  | `#1d6fd1` / `#4aa3ff` (night) | Secondary accent: hover glow, visited links. |
+| `--wbr-strip`     | copper→ember→brass gradient | Title-strip background. |
+| `--wbr-shadow`    | `#5b3a14`          | Hard offset shadow color. |
+| `--wbr-border`    | `#b07a1f`          | Border color (3px double brass frame). |
+| `--wbr-accent`    | `#a8420f` / `#ffc857` (night) | Link color. |
+| `--wbr-radius`    | `3px`              | Corner radius. |
+| `--wbr-pad-y` / `--wbr-pad-x` | `8px` / `12px` | Inner padding. |
+| `--wbr-gap`       | `6px`              | Spacing between nav links. |
+| `--wbr-font`      | Georgia, serif        | Font family (match the page). |
 | `--wbr-font-size` | `14px`             | Text size. |
 | `--wbr-logo-size` | `18px`             | Brand-mark height. |
 

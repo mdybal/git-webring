@@ -1,20 +1,12 @@
+/* Demo-site theme: tavern wood + parchment, in the spirit of twojestarerpg.pl */
 :root {
-  color-scheme: light dark;
-  --fg: #111;
-  --bg: #fafafa;
-  --muted: #666;
-  --border: #e1e4e8;
-  --accent: #0366d6;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fg: #eee;
-    --bg: #0d1117;
-    --muted: #8b949e;
-    --border: #30363d;
-    --accent: #58a6ff;
-  }
+  color-scheme: light;
+  --fg: #3a2412;
+  --bg: #8a5f3a;
+  --paper: #ecdcb8;
+  --muted: #6b5236;
+  --border: #b07a1f;
+  --accent: #a8420f;
 }
 
 * { box-sizing: border-box; }
@@ -22,9 +14,16 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
   color: var(--fg);
-  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font: 17px/1.65 "EB Garamond", Georgia, "Times New Roman", serif;
+}
+
+body {
+  background-color: #6b4a2e;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(240,138,36,.16), transparent 55%),
+    repeating-linear-gradient(90deg, #6e4a2c 0, #7a5333 2px, #704c2e 4px, #805a38 7px);
+  background-attachment: fixed;
 }
 
 header, main, footer {
@@ -36,31 +35,30 @@ header, main, footer {
 header {
   padding-top: 48px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  color: #f6e7c4;
+  border-bottom: 3px double var(--border);
 }
+
+h1, h2 { font-family: Cinzel, "Trajan Pro", Georgia, serif; }
 
 h1 {
   font-size: 32px;
   margin: 0 0 8px;
-  letter-spacing: -0.02em;
+  letter-spacing: .04em;
+  text-shadow: 2px 2px 0 rgba(0,0,0,.45);
 }
 
-h2 {
-  font-size: 20px;
-  margin: 0 0 12px;
-}
+h2 { font-size: 20px; margin: 0 0 12px; }
 
-.tagline {
-  margin: 0;
-  color: var(--muted);
-}
+.tagline { margin: 0; color: #e3cf9f; }
 
 .card {
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border: 3px double var(--border);
+  border-radius: 3px;
   padding: 20px 22px;
   margin: 24px 0;
-  background: var(--bg);
+  background: var(--paper);
+  box-shadow: 3px 3px 0 #2b1b10;
 }
 
 .card p, .card li { margin: 8px 0; }
@@ -72,15 +70,16 @@ a:hover, a:focus { text-decoration: underline; }
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.92em;
-  background: rgba(127,127,127,0.12);
+  background: rgba(90,58,20,0.14);
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 pre {
-  background: rgba(127,127,127,0.10);
+  background: #2b1b10;
+  color: #f1dfb8;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 12px 14px;
   overflow-x: auto;
   font-size: 13px;
@@ -89,20 +88,14 @@ pre {
 
 pre code { background: transparent; padding: 0; }
 
-details {
-  margin-top: 10px;
-}
-
-details summary {
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 14px;
-}
+details { margin-top: 10px; }
+details summary { cursor: pointer; color: var(--muted); font-size: 14px; }
 
 footer {
-  border-top: 1px solid var(--border);
-  color: var(--muted);
+  border-top: 3px double var(--border);
+  color: #e3cf9f;
   font-size: 14px;
   text-align: center;
   padding-bottom: 48px;
 }
+footer a { color: #ffc857; }
