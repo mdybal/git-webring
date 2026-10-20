@@ -1,10 +1,10 @@
 [
   {
-    "id": "example",
-    "name": "Example Member",
-    "url": "https://example.com/",
-    "added": "2026-01-01",
-    "icon": "/example-avatar.png",
-    "logo": "/example-logo.svg"
+    "id": "TwojeStareRPG",
+    "name": "Twoje Stare RPG",
+    "url": "https://www.twojestarerpg.pl/",
+    "added": "2026-10-20"
+     "icon": "/favicon.ico",
+     "logo": "/logo.png"
   }
 ]
